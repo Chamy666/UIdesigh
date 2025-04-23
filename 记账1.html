@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日记账 - 原型设计</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .header h1 {
+            color: #4a6cf7;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5ce5;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #4a6cf7;
+            color: #4a6cf7;
+        }
+        
+        .btn-outline:hover {
+            background-color: #f0f4ff;
+        }
+        
+        .btn-danger {
+            background-color: #ff4d4f;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #ff2a2d;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-right: 10px;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid #4a6cf7;
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            border-color: #4a6cf7;
+            outline: none;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .flex {
+            display: flex;
+        }
+        
+        .justify-between {
+            justify-content: space-between;
+        }
+        
+        .items-center {
+            align-items: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-gap: 20px;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .text-green {
+            color: #52c41a;
+        }
+        
+        .text-red {
+            color: #ff4d4f;
+        }
+        
+        .text-blue {
+            color: #4a6cf7;
+        }
+        
+        .text-gray {
+            color: #999;
+        }
+        
+        .text-sm {
+            font-size: 12px;
+        }
+        
+        .text-lg {
+            font-size: 18px;
+        }
+        
+        .text-xl {
+            font-size: 24px;
+        }
+        
+        .font-bold {
+            font-weight: 600;
+        }
+        
+        .mt-10 {
+            margin-top: 10px;
+        }
+        
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        
+        .ml-10 {
+            margin-left: 10px;
+        }
+        
+        .p-15 {
+            padding: 15px;
+        }
+        
+        .border-bottom {
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4a6cf7;
+        }
+        
+        .nav-links {
+            display: flex;
+        }
+        
+        .nav-link {
+            margin-left: 20px;
+            color: #666;
+            text-decoration: none;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .nav-link.active {
+            color: #4a6cf7;
+            font-weight: 500;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #4a6cf7;
+        }
+        
+        .nav-link:hover {
+            color: #4a6cf7;
+        }
+        
+        /* 页面特定样式 */
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-card .label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #4a6cf7;
+            font-size: 18px;
+        }
+        
+        .transaction-details h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .transaction-details p {
+            margin: 0;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .budget-progress {
+            margin-bottom: 20px;
+        }
+        
+        .budget-progress .title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar .fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .progress-bar .fill.safe {
+            background-color: #52c41a;
+        }
+        
+        .progress-bar .fill.warning {
+            background-color: #faad14;
+        }
+        
+        .progress-bar .fill.danger {
+            background-color: #ff4d4f;
+        }
+        
+        .category-select {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .category-item {
+            text-align: center;
+            padding: 15px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-item:hover {
+            background-color: #f0f4ff;
+        }
+        
+        .category-item.selected {
+            background-color: #f0f4ff;
+            border: 1px solid #4a6cf7;
+        }
+        
+        .category-item .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .account-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .account-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .account-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: #f0f4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #4a6cf7;
+            font-size: 18px;
+        }
+        
+        .account-details h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .account-details p {
+            margin: 0;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .account-balance {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* 模拟图表 */
+        .chart-placeholder {
+            width: 100%;
+            height: 300px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-select {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .category-select {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">每日记账</div>
+            <div class="nav-links">
+                <a href="#overview" class="nav-link active">概览</a>
+                <a href="#add-transaction" class="nav-link">记账</a>
+                <a href="#transactions" class="nav-link">账单</a>
+                <a href="#budget" class="nav-link">预算</a>
+                <a href="#statistics" class="nav-link">统计</a>
+                <a href="#accounts" class="nav-link">账户</a>
+                <a href="#settings" class="nav-link">设置</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="header">
+            <h1>每日记账原型设计</h1>
+            <p>简单高效的个人财务管理工具</p>
+        </div>
+        
+        <!-- 概览页面 -->
+        <div id="overview" class="section">
+            <div class="section-title">
+                <span>财务概览</span>
+                <span class="text-gray">2025年2月</span>
+            </div>
+            
+            <!-- 财务统计卡片 -->
+            <div class="grid grid-3">
+                <div class="stat-card">
+                    <div class="label">本月收入</div>
+                    <div class="value text-green">¥8,560.00</div>
+                    <div class="text-sm">较上月 <span class="text-green">+12.5%</span></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="label">本月支出</div>
+                    <div class="value text-red">¥5,320.00</div>
+                    <div class="text-sm">较上月 <span class="text-red">+8.2%</span></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="label">本月结余</div>
+                    <div class="value text-blue">¥3,240.00</div>
+                    <div class="text-sm">较上月 <span class="text-green">+20.1%</span></div>
+                </div>
+            </div>
+            
+            <!-- 预算进度 -->
+            <div class="section-title mt-10">
+                <span>预算进度</span>
+                <button class="btn btn-outline">查看全部</button>
+            </div>
+            
+            <div class="budget-progress">
+                <div class="title">
+                    <span>餐饮</span>
+                    <span>¥1,200 / ¥2,000</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="fill safe" style="width: 60%"></div>
+                </div>
+            </div>
+            
+            <div class="budget-progress">
+                <div class="title">
+                    <span>购物</span>
+                    <span>¥1,800 / ¥2,000</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="fill warning" style="width: 90%"></div>
+                </div>
+            </div>
+            
+            <div class="budget-progress">
+                <div class="title">
+                    <span>交通</span>
+                    <span>¥550 / ¥500</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="fill danger" style="width: 110%"></div>
+                </div>
+            </div>
+            
+            <!-- 近期交易 -->
+            <div class="section-title mt-10">
+                <span>近期交易</span>
+                <button class="btn btn-outline">查看全部</button>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">🍔</div>
+                    <div class="transaction-details">
+                        <h4>午餐</h4>
+                        <p>今天 12:30 · 餐饮</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-red">-¥35.00</div>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">🚕</div>
+                    <div class="transaction-details">
+                        <h4>打车</h4>
+                        <p>今天 09:15 · 交通</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-red">-¥28.50</div>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">💼</div>
+                    <div class="transaction-details">
+                        <h4>工资</h4>
+                        <p>昨天 10:00 · 收入</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-green">+¥8,500.00</div>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">🛒</div>
+                    <div class="transaction-details">
+                        <h4>超市购物</h4>
+                        <p>昨天 18:45 · 购物</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-red">-¥156.80</div>
+            </div>
+        </div>
+        
+        <!-- 记账页面 -->
+        <div id="add-transaction" class="section">
+            <div class="section-title">
+                <span>记一笔</span>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active">支出</div>
+                <div class="tab">收入</div>
+                <div class="tab">转账</div>
+            </div>
+            
+            <!-- 分类选择 -->
+            <div class="category-select">
+                <div class="category-item selected">
+                    <div class="icon">🍔</div>
+                    <div>餐饮</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🛒</div>
+                    <div>购物</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🚕</div>
+                    <div>交通</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🏠</div>
+                    <div>住房</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">📱</div>
+                    <div>通讯</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">💊</div>
+                    <div>医疗</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">🎮</div>
+                    <div>娱乐</div>
+                </div>
+                <div class="category-item">
+                    <div class="icon">➕</div>
+                    <div>更多</div>
+                </div>
+            </div>
+            
+            <!-- 记账表单 -->
+            <form>
+                <div class="form-group">
+                    <label for="amount">金额</label>
+                    <input type="number" id="amount" class="form-control" placeholder="0.00" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">日期</label>
+                    <input type="date" id="date" class="form-control" value="2025-02-13" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="account">账户</label>
+                    <select id="account" class="form-control" required>
+                        <option value="1">现金</option>
+                        <option value="2">微信</option>
+                        <option value="3">支付宝</option>
+                        <option value="4">信用卡</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="note">备注</label>
+                    <input type="text" id="note" class="form-control" placeholder="添加备注...">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">保存</button>
+            </form>
+        </div>
+        
+        <!-- 账单明细页面 -->
+        <div id="transactions" class="section">
+            <div class="section-title">
+                <span>账单明细</span>
+                <div>
+                    <button class="btn btn-outline">筛选</button>
+                    <button class="btn btn-outline ml-10">导出</button>
+                </div>
+            </div>
+            
+            <!-- 筛选选项 -->
+            <div class="flex justify-between mb-10">
+                <div>
+                    <select class="form-control">
+                        <option>全部类型</option>
+                        <option>支出</option>
+                        <option>收入</option>
+                        <option>转账</option>
+                    </select>
+                </div>
+                <div>
+                    <select class="form-control">
+                        <option>2025年2月</option>
+                        <option>2025年1月</option>
+                        <option>2024年12月</option>
+                        <option>自定义时间</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- 账单列表 -->
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">🍔</div>
+                    <div class="transaction-details">
+                        <h4>午餐</h4>
+                        <p>2025-02-13 12:30 · 餐饮 · 微信</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-red">-¥35.00</div>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">🚕</div>
+                    <div class="transaction-details">
+                        <h4>打车</h4>
+                        <p>2025-02-13 09:15 · 交通 · 支付宝</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-red">-¥28.50</div>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">💼</div>
+                    <div class="transaction-details">
+                        <h4>工资</h4>
+                        <p>2025-02-12 10:00 · 收入 · 银行卡</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-green">+¥8,500.00</div>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">🛒</div>
+                    <div class="transaction-details">
+                        <h4>超市购物</h4>
+                        <p>2025-02-12 18:45 · 购物 · 信用卡</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-red">-¥156.80</div>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">📱</div>
+                    <div class="transaction-details">
+                        <h4>手机话费</h4>
+                        <p>2025-02-10 20:15 · 通讯 · 微信</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-red">-¥100.00</div>
+            </div>
+            
+            <div class="transaction-item">
+                <div class="transaction-info">
+                    <div class="category-icon">🏠</div>
+                    <div class="transaction-details">
+                        <h4>房租</h4>
+                        <p>2025-02-05 09:30 · 住房 · 银行卡</p>
+                    </div>
+                </div>
+                <div class="transaction-amount text-red">-¥2,500.00</div>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="flex justify-between items-center mt-10">
+                <div class="text-gray">显示 1-6 共 24 条</div>
+                <div>
+                    <button class="btn btn-outline">上一页</button>
+                    <button class="btn btn-primary ml-10">下一页</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 预算管理页面 -->
+        <div id="budget" class="section">
+            <div class="section-title">
+                <span>预算管理</span>
+                <button class="btn btn-primary">添加预算</button>
+            </div>
+            
+            <!-- 月度总预算 -->
+            <div class="card">
+                <div class="flex justify-between">
+                    <div>
+                        <h3>2025年2月总预算</h3>
+                        <p class="text-gray">2025-02-01 至 2025-02-29</p>
+                    </div>
+                    <div class="text-xl font-bold">¥8,000.00</div>
+                </div>
+                
+                <div class="mt-10">
+                    <div class="flex justify-between mb-10">
+                        <span>已使用: ¥5,320.00</span>
+                        <span>剩余: ¥2,680.00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="fill safe" style="width: 66.5%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分类预算列表 -->
+            <div class="section-title mt-10">
+                <span>分类预算</span>
+            </div>
+            
+            <div class="card">
+                <div class="flex justify-between">
+                    <div class="flex items-center">
+                        <div class="category-icon">🍔</div>
+                        <div>
+                            <h4>餐饮</h4>
+                            <p class="text-gray">¥1,200 / ¥2,000</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline">编辑</button>
+                    </div>
+                </div>
+                <div class="progress-bar mt-10">
+                    <div class="fill safe" style="width: 60%"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex justify-between">
+                    <div class="flex items-center">
+                        <div class="category-icon">🛒</div>
+                        <div>
+                            <h4>购物</h4>
+                            <p class="text-gray">¥1,800 / ¥2,000</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline">编辑</button>
+                    </div>
+                </div>
+                <div class="progress-bar mt-10">
+                    <div class="fill warning" style="width: 90%"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex justify-between">
+                    <div class="flex items-center">
+                        <div class="category-icon">🚕</div>
+                        <div>
+                            <h4>交通</h4>
+                            <p class="text-gray">¥550 / ¥500</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline">编辑</button>
+                    </div>
+                </div>
+                <div class="progress-bar mt-10">
+                    <div class="fill danger" style="width: 110%"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex justify-between">
+                    <div class="flex items-center">
+                        <div class="category-icon">🏠</div>
+                        <div>
+                            <h4>住房</h4>
+                            <p class="text-gray">¥2,500 / ¥3,000</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline">编辑</button>
+                    </div>
+                </div>
+                <div class="progress-bar mt-10">
+                    <div class="fill safe" style="width: 83.3%"></div>
+                </div>
+            </div>
+            
+            <!-- 添加预算表单 -->
+            <div class="card" style="display: none;">
+                <h3>添加预算</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="budget-category">类别</label>
+                        <select id="budget-category" class="form-control" required>
+                            <option value="">选择类别</option>
+                            <option value="1">餐饮</option>
+                            <option value="2">购物</option>
+                            <option value="3">交通</option>
+                            <option value="4">住房</option>
+                            <option value="5">通讯</option>
+                            <option value="6">医疗</option>
+                            <option value="7">娱乐</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budget-amount">金额</label>
+                        <input type="number" id="budget-amount" class="form-control" placeholder="0.00" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budget-period">周期</label>
+                        <select id="budget-period" class="form-control" required>
+                            <option value="month">每月</option>
+                            <option value="week">每周</option>
+                            <option value="year">每年</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex">
+                        <button type="button" class="btn btn-outline" style="flex: 1; margin-right: 10px;">取消</button>
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 统计分析页面 -->
+        <div id="statistics" class="section">
+            <div class="section-title">
+                <span>统计分析</span>
+                <select class="form-control" style="width: auto;">
+                    <option>2025年2月</option>
+                    <option>2025年1月</option>
+                    <option>2024年12月</option>
+                    <option>自定义时间</option>
+                </select>
+            </div>
+            
+            <!-- 收支概览 -->
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>收支概览</h3>
+                    <div class="chart-placeholder">
+                        [收支对比柱状图]
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>支出分类</h3>
+                    <div class="chart-placeholder">
+                        [支出分类饼图]
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 趋势分析 -->
+            <div class="card mt-10">
+                <h3>收支趋势</h3>
+                <div class="chart-placeholder">
+                    [收支趋势折线图]
+                </div>
+            </div>
+            
+            <!-- 消费排行 -->
+            <div class="section-title mt-10">
+                <span>消费排行</span>
+            </div>
+            
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>类别排行</h3>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="category-icon">🏠</div>
+                            <div class="transaction-details">
+                                <h4>住房</h4>
+                                <p>占总支出的 47%</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount text-red">¥2,500.00</div>
+                    </div>
+                    
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="category-icon">🛒</div>
+                            <div class="transaction-details">
+                                <h4>购物</h4>
+                                <p>占总支出的 34%</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount text-red">¥1,800.00</div>
+                    </div>
+                    
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="category-icon">🍔</div>
+                            <div class="transaction-details">
+                                <h4>餐饮</h4>
+                                <p>占总支出的 23%</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount text-red">¥1,200.00</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>商家排行</h3>
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="category-icon">🏢</div>
+                            <div class="transaction-details">
+                                <h4>房东</h4>
+                                <p>1笔交易</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount text-red">¥2,500.00</div>
+                    </div>
+                    
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="category-icon">🛒</div>
+                            <div class="transaction-details">
+                                <h4>京东</h4>
+                                <p>5笔交易</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount text-red">¥856.00</div>
+                    </div>
+                    
+                    <div class="transaction-item">
+                        <div class="transaction-info">
+                            <div class="category-icon">🛒</div>
+                            <div class="transaction-details">
+                                <h4>淘宝</h4>
+                                <p>8笔交易</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount text-red">¥720.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 账户管理页面 -->
+        <div id="accounts" class="section">
+            <div class="section-title">
+                <span>账户管理</span>
+                <button class="btn btn-primary">添加账户</button>
+            </div>
+            
+            <!-- 总资产 -->
+            <div class="card">
+                <div class="flex justify-between">
+                    <h3>总资产</h3>
+                    <div class="text-xl font-bold">¥25,680.50</div>
+                </div>
+            </div>
+            
+            <!-- 账户列表 -->
+            <div class="section-title mt-10">
+                <span>我的账户</span>
+            </div>
+            
+            <div class="account-card">
+                <div class="account-info">
+                    <div class="account-icon">💰</div>
+                    <div class="account-details">
+                        <h4>现金</h4>
+                        <p>流动资产</p>
+                    </div>
+                </div>
+                <div class="account-balance">¥1,250.00</div>
+            </div>
+            
+            <div class="account-card">
+                <div class="account-info">
+                    <div class="account-icon">🏦</div>
+                    <div class="account-details">
+                        <h4>工商银行</h4>
+                        <p>储蓄卡</p>
+                    </div>
+                </div>
+                <div class="account-balance">¥15,320.50</div>
+            </div>
+            
+            <div class="account-card">
+                <div class="account-info">
+                    <div class="account-icon">💳</div>
+                    <div class="account-details">
+                        <h4>招商银行</h4>
+                        <p>信用卡</p>
+                    </div>
+                </div>
+                <div class="account-balance text-red">-¥2,560.00</div>
+            </div>
+            
+            <div class="account-card">
+                <div class="account-info">
+                    <div class="account-icon">📱</div>
+                    <div class="account-details">
+                        <h4>微信</h4>
+                        <p>电子钱包</p>
+                    </div>
+                </div>
+                <div class="account-balance">¥3,850.00</div>
+            </div>
+            
+            <div class="account-card">
+                <div class="account-info">
+                    <div class="account-icon">📱</div>
+                    <div class="account-details">
+                        <h4>支付宝</h4>
+                        <p>电子钱包</p>
+                    </div>
+                </div>
+                <div class="account-balance">¥7,820.00</div>
+            </div>
+            
+            <!-- 添加账户表单 -->
+            <div class="card" style="display: none;">
+                <h3>添加账户</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="account-name">账户名称</label>
+                        <input type="text" id="account-name" class="form-control" placeholder="例如：工商银行" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account-type">账户类型</label>
+                        <select id="account-type" class="form-control" required>
+                            <option value="">选择类型</option>
+                            <option value="cash">现金</option>
+                            <option value="bank">银行卡</option>
+                            <option value="credit">信用卡</option>
+                            <option value="ewallet">电子钱包</option>
+                            <option value="investment">投资账户</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account-balance">初始余额</label>
+                        <input type="number" id="account-balance" class="form-control" placeholder="0.00" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account-note">备注</label>
+                        <input type="text" id="account-note" class="form-control" placeholder="添加备注...">
+                    </div>
+                    
+                    <div class="flex">
+                        <button type="button" class="btn btn-outline" style="flex: 1; margin-right: 10px;">取消</button>
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 设置页面 -->
+        <div id="settings" class="section">
+            <div class="section-title">
+                <span>设置</span>
+            </div>
+            
+            <!-- 个人信息 -->
+            <div class="card">
+                <h3>个人信息</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="user-name">姓名</label>
+                        <input type="text" id="user-name" class="form-control" value="张三">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-email">邮箱</label>
+                        <input type="email" id="user-email" class="form-control" value="zhangsan@example.com">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">保存修改</button>
+                </form>
+            </div>
+            
+            <!-- 偏好设置 -->
+            <div class="card mt-10">
+                <h3>偏好设置</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="currency">货币</label>
+                        <select id="currency" class="form-control">
+                            <option value="CNY" selected>人民币 (¥)</option>
+                            <option value="USD">美元 ($)</option>
+                            <option value="EUR">欧元 (€)</option>
+                            <option value="GBP">英镑 (£)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="start-day">每月起始日</label>
+                        <select id="start-day" class="form-control">
+                            <option value="1" selected>1日</option>
+                            <option value="15">15日</option>
+                            <option value="custom">自定义</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>预算提醒</label>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="budget-alert" checked>
+                            <label for="budget-alert" class="ml-10">当预算使用超过80%时提醒我</label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">保存设置</button>
+                </form>
+            </div>
+            
+            <!-- 数据管理 -->
+            <div class="card mt-10">
+                <h3>数据管理</h3>
+                <div class="form-group">
+                    <button class="btn btn-outline">导出数据</button>
+                    <p class="text-sm text-gray mt-10">将您的所有财务数据导出为CSV或Excel格式</p>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn btn-outline">导入数据</button>
+                    <p class="text-sm text-gray mt-10">从CSV或Excel文件导入财务数据</p>
+                </div>
+                
+                <div class="form-group">
+                    <button class="btn btn-danger">清空数据</button>
+                    <p class="text-sm text-gray mt-10">删除所有财务记录（此操作不可撤销）</p>
+                </div>
+            </div>
+            
+            <!-- 关于 -->
+            <div class="card mt-10">
+                <h3>关于</h3>
+                <p class="mt-10">每日记账 v1.0.0</p>
+                <p class="text-sm text-gray">© 2025 每日记账团队</p>
+                <p class="text-sm text-gray mt-10">一个简单高效的个人财务管理工具</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 这里可以添加交互逻辑
+        // 由于这是原型设计，我们只需要展示UI，不需要实际功能
+    </script>
+</body>
+</html>
